@@ -21,15 +21,6 @@ from object_detection.utils import dataset_util
 from collections import namedtuple, OrderedDict
 import argparse
 
-
-# TO-DO replace this with label map
-def class_text_to_int(row_label):
-    if row_label == 'raccoon':
-        return 1
-    else:
-        None
-
-
 def split(df, group):
     data = namedtuple('data', ['filename', 'object'])
     gb = df.groupby(group)
@@ -37,7 +28,7 @@ def split(df, group):
 
 
 def create_tf_example(group, path):
-    with tf.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
+    with tf.io.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
     image = Image.open(encoded_jpg_io)
@@ -57,8 +48,8 @@ def create_tf_example(group, path):
         xmaxs.append(row['xmax'] / width)
         ymins.append(row['ymin'] / height)
         ymaxs.append(row['ymax'] / height)
-        classes_text.append(row['class'].encode('utf8'))
-        classes.append(class_text_to_int(row['class']))
+        classes_text.append(str(row['class']).encode('utf8'))
+        classes.append(int(row['class']))
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
@@ -84,7 +75,7 @@ def main(_):
     parser.add_argument('-in', '--input_csv', help='define the input xml file', type=str, required=True)
     parser.add_argument('-out', '--output_tfrecord', help='define the output file ', type=str, required=True)
     args = parser.parse_args()
-    writer = tf.python_io.TFRecordWriter(args.output_tfrecord)
+    writer = tf.io.TFRecordWriter(args.output_tfrecord)
     path = os.path.join(os.getcwd(), 'images')
     examples = pd.read_csv(args.input_csv)
     grouped = split(examples, 'filename')
@@ -98,4 +89,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-    tf.app.run()
+    tf.compat.v1.app.run()
