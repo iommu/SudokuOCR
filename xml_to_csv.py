@@ -1,10 +1,8 @@
-# modified from https://github.com/datitran/raccoon_dataset
-
 import os
 import glob
 import pandas as pd
 import xml.etree.ElementTree as ET
-
+import argparse
 
 def xml_to_csv(path):
     xml_list = []
@@ -28,9 +26,14 @@ def xml_to_csv(path):
 
 
 def main():
-    xml_path = os.path.join(os.getcwd(), 'labelImgOutput')
-    xml_df = xml_to_csv(xml_path)
-    xml_df.to_csv('textLabels.csv', index=None)
+     # Taking command line arguments from users
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-in', '--input_xml', help='define the input xml file', type=str, required=True)
+    parser.add_argument('-out', '--output_csv', help='define the output file ', type=str, required=True)
+    args = parser.parse_args()
+
+    xml_df = xml_to_csv(args.input_xml)
+    xml_df.to_csv(args.output_csv, index=None)
     print('Successfully converted xml to csv.')
 
 
