@@ -8,5 +8,3 @@ tf.enable_eager_execution()
 
 print("TF version : {}".format(tf.__version__))
 print("Eager Exec : {}".format(tf.executing_eagerly()))
-
-
