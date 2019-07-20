@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# generate the combined CSV
-python3 ./xml_to_csv.py -in annotations -out data/labels.csv  
+# {create .xml files from lableImg}
+# mv ./*.xml files
+mv ./images/*.xml ./annotations
 
-# convert csv to tfrecord
-python3 ./generate_tfrecord.py -in data/labels.csv -out data/train.record
-# generate test.record (same as train for now)
-python3 ./generate_tfrecord.py -in data/labels.csv -out data/test.record
+# create proper directory structure
+python3 ./xml_to_dir.py -in-xml annotations -in-img images -out data  
+
+# run retrain script
+python3 retrain.py --image_dir ./data
