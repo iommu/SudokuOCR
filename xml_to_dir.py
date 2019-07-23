@@ -6,6 +6,7 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import argparse
 import cv2
+import numpy as np
 
 def xml_to_dir(pathIn, pathImages,pathOut):
     xml_list = []
@@ -17,12 +18,18 @@ def xml_to_dir(pathIn, pathImages,pathOut):
             img = cv2.imread(pathImages+'/'+root.find('filename').text)
             crop = img[int(member[4][1].text):int(member[4][3].text),
                        int(member[4][0].text):int(member[4][2].text)]
-            try:
-                os.mkdir(pathOut+'/'+member[0].text)
-            except:
-                pass
-            cv2.imwrite(pathOut+'/'+member[0].text+'/'+str(i)+'.png',crop)
-            i += 1
+            for i in range(0,3):
+                if i==2:
+                    kernel = np.ones((5,5),np.float32)/25
+                    crop = cv2.filter2D(crop,-1,kernel)
+                elif i==3:
+                    crop = cv2.blur(crop,(5,5))
+                try:
+                    os.mkdir(pathOut+'/'+member[0].text)
+                except:
+                    pass
+                cv2.imwrite(pathOut+'/'+member[0].text+'/'+str(i)+'.png',crop)
+                i += 1
 
 
 def main():

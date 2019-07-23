@@ -16,3 +16,5 @@ toco \
   --output_file=./output/output_graph.tflite \
   --input_array=Placeholder \
   --output_array=final_result
+
+mv  /tmp/output_labels.txt ./output/labels.txt
